@@ -1,4 +1,5 @@
 import restify from 'restify';
+import Model from './src/Domain/Model/Model';
 
 const server = restify.createServer({
     name: 'restify-sequelize-example'
@@ -15,6 +16,14 @@ server.pre(restify.CORS({'origins': ['*']}));
 
 require('./src/Http/Routers/User')(server);
 
-server.listen(8000);
+Model((model) => {
+    model.sequelize.sync({
+        force: true
+    }).then(() => {
+        log('Schema synced successfully!');
+    }).catch((errResult) => {
+        console.log(errResult);
+    });
+});
 
-module.exports = server;
+export default server;
